@@ -1,0 +1,27 @@
+<div class="login-container">
+    <div class="form-toggle">
+        <vaadin-button theme="tertiary" @click=${this.toggleForm}>
+            ${this.showLogin ? "Need an account? Register" : "Already have an account? Sign In"}
+        </vaadin-button>
+    </div>
+
+    <div id="loginForm" style="display: ${this.showLogin ? 'block' : 'none'}">
+        <h2>Sign In</h2>
+        <div class="login-form">
+            <vaadin-text-field label="Email" theme="medium"></vaadin-text-field>
+            <vaadin-password-field label="Password" theme="medium"></vaadin-password-field>
+            <vaadin-button theme="primary" @click=${this.handleLogin}>Sign In</vaadin-button>
+        </div>
+    </div>
+
+    <div id="registerForm" style="display: ${this.showLogin ? 'none' : 'block'}">
+        <h2>Register</h2>
+        <div class="login-form">
+            <vaadin-text-field label="Username" theme="medium"></vaadin-text-field>
+            <vaadin-text-field label="Email" theme="medium"></vaadin-text-field>
+            <vaadin-password-field label="Password" theme="medium"></vaadin-password-field>
+            <vaadin-password-field label="Confirm Password" theme="medium"></vaadin-password-field>
+            <vaadin-button theme="primary" @click=${this.handleRegister}>Register</vaadin-button>
+        </div>
+    </div>
+</div>
