@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "main": "server/server.js",
   "scripts": {
-    "start": "webpack serve --mode development",
-    "build": "webpack --mode production"
+    "start": "node server/init-db.js && webpack serve --mode development",
+    "build": "webpack --mode production",
+    "init-db": "node server/init-db.js"
   },
   "dependencies": {
     "@apollo/server": "^4.11.3",

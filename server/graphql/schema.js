@@ -12,15 +12,23 @@ const typeDefs = gql`
         user: User!
     }
 
+    type Captcha {
+        id: ID!
+        image: String!
+    }
+
     input RegisterInput {
         username: String!
         email: String!
         password: String!
+        captchaId: String!
+        captchaAnswer: String!
     }
 
     type Query {
         message: String
         users: [User]
+        generateCaptcha: Captcha!
     }
 
     type Mutation {
