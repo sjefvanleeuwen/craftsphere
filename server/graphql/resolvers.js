@@ -118,15 +118,16 @@ const resolvers = {
                 throw new Error(error.message);
             }
         },
-        login: async (_, { input }, { res }) => {
+        login: async (_, { input }, context) => {  // Changed from { res } to context
             const { username, password } = input;
             const ipAddress = context.req?.ip || context.req?.headers['x-forwarded-for'] || null;
 
             try {
                 const db = await dbPromise;
+                // First find the user by username only to give better error messages
                 const user = await db.get(
-                    'SELECT * FROM users WHERE username = ? AND password = ?',
-                    [username, password]
+                    'SELECT * FROM users WHERE username = ?',
+                    [username]
                 );
 
                 if (!user) {
@@ -134,8 +135,22 @@ const resolvers = {
                         EventTypes.USER,
                         EventClasses.LOGIN,
                         EventResults.FAILED,
-                        `Login failed for user ${username}: Invalid credentials`,
+                        `Login failed: User ${username} not found`,
                         null,
+                        ipAddress
+                    );
+                    throw new Error('Invalid username or password');
+                }
+
+                // Then check password
+                const match = user.password === password;  // Note: This is not secure, but matches current schema
+                if (!match) {
+                    await logEvent(
+                        EventTypes.USER,
+                        EventClasses.LOGIN,
+                        EventResults.FAILED,
+                        `Login failed: Invalid password for user ${username}`,
+                        user.id,
                         ipAddress
                     );
                     throw new Error('Invalid username or password');
@@ -143,13 +158,15 @@ const resolvers = {
 
                 const token = generateToken(user);
 
-                // Set HTTP-only cookie
-                res.cookie('auth_token', token, {
-                    httpOnly: true,
-                    secure: process.env.NODE_ENV === 'production',
-                    maxAge: 24 * 60 * 60 * 1000, // 24 hours
-                    sameSite: 'strict'
-                });
+                // Set HTTP-only cookie if context.res exists
+                if (context.res) {
+                    context.res.cookie('auth_token', token, {
+                        httpOnly: true,
+                        secure: process.env.NODE_ENV === 'production',
+                        maxAge: 24 * 60 * 60 * 1000, // 24 hours
+                        sameSite: 'strict'
+                    });
+                }
 
                 const result = {
                     token,
