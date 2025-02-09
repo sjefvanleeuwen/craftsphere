@@ -17,6 +17,16 @@ const typeDefs = gql`
         image: String!
     }
 
+    type Log {
+        id: ID!
+        eventType: String!
+        eventClass: String!
+        eventResult: String!
+        eventMessage: String!
+        userId: ID
+        createdAt: String!
+    }
+
     input RegisterInput {
         username: String!
         email: String!
@@ -25,14 +35,21 @@ const typeDefs = gql`
         captchaAnswer: String!
     }
 
+    input LoginInput {
+        username: String!
+        password: String!
+    }
+
     type Query {
         message: String
         users: [User]
         generateCaptcha: Captcha!
+        logs(limit: Int, offset: Int): [Log!]!
     }
 
     type Mutation {
         register(input: RegisterInput!): AuthPayload
+        login(input: LoginInput!): AuthPayload
     }
 `;
 

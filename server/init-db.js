@@ -29,6 +29,21 @@ async function initializeDatabase() {
             )
         `);
 
+        // Create logs table
+        await db.exec(`
+            CREATE TABLE IF NOT EXISTS logs (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                event_type TEXT NOT NULL,     -- 'System' or 'User'
+                event_class TEXT NOT NULL,    -- 'Login', 'Register', etc.
+                event_result TEXT NOT NULL,   -- 'Success', 'Failed', 'Error'
+                event_message TEXT NOT NULL,
+                user_id INTEGER,
+                ip_address TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (user_id) REFERENCES users(id)
+            )
+        `);
+
         // Check if there are any users
         const userCount = await db.get('SELECT COUNT(*) as count FROM users');
         

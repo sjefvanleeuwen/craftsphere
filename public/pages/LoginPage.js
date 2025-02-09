@@ -1,7 +1,8 @@
 import { LitElement, html } from 'lit';
 import '../vaadin-imports.js';
-import { REGISTER_USER, GENERATE_CAPTCHA } from '../graphql/auth.js';
+import { REGISTER_USER, GENERATE_CAPTCHA, LOGIN_USER } from '../graphql/auth.js';
 import { gqlRequest } from '../graphql/client.js';
+import './styles/login.css';
 
 export class LoginPage extends LitElement {
     static properties = {
@@ -68,7 +69,7 @@ export class LoginPage extends LitElement {
         const value = field.value;
         
         switch(field.id) {
-            case 'loginEmail':
+            case 'loginUsername':
             case 'registerEmail':
                 this.emailError = this.validateEmail(value);
                 break;
@@ -113,15 +114,35 @@ export class LoginPage extends LitElement {
         }
     }
 
-    handleLogin(e) {
-        const email = this.querySelector('#loginEmail').value;
+    async handleLogin(e) {
+        const username = this.querySelector('#loginUsername').value;
         const password = this.querySelector('#loginPassword').value;
         
-        this.emailError = this.validateEmail(email);
+        this.usernameError = this.validateUsername(username);
         this.passwordError = this.validatePasswords(password);
         
-        if (!this.emailError && !this.passwordError) {
-            console.log('Login validation passed');
+        if (!this.usernameError && !this.passwordError) {
+            try {
+                const result = await gqlRequest(LOGIN_USER, {
+                    username,
+                    password
+                });
+
+                if (result.login) {
+                    // Store user info
+                    localStorage.setItem('user', JSON.stringify(result.login.user));
+                    localStorage.setItem('authToken', result.login.token);
+                    
+                    // Notify components about login
+                    window.dispatchEvent(new CustomEvent('auth-changed'));
+
+                    // Redirect to home
+                    window.location.href = '/';
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                this.usernameError = 'Invalid username or password';
+            }
         }
     }
 
@@ -184,13 +205,13 @@ export class LoginPage extends LitElement {
                         <h2>Sign In</h2>
                         <div class="login-form">
                             <vaadin-text-field 
-                                id="loginEmail"
-                                label="Email" 
+                                id="loginUsername"
+                                label="Username" 
                                 theme="medium"
                                 @input=${e => this.validateField(e.target)}
                                 @change=${e => this.validateField(e.target)}
-                                .errorMessage=${this.emailError}
-                                .invalid=${Boolean(this.emailError)}
+                                .errorMessage=${this.usernameError}
+                                .invalid=${Boolean(this.usernameError)}
                             ></vaadin-text-field>
                             <vaadin-password-field 
                                 id="loginPassword"

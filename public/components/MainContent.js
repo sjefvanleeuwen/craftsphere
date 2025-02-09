@@ -18,8 +18,11 @@ export class MainContent extends LitElement {
 
     render() {
         return html`
-            <home-page style="display: ${this.currentPage === '/' ? 'block' : 'none'}"></home-page>
-            <login-page style="display: ${this.currentPage === '/login' ? 'block' : 'none'}"></login-page>
+            <div style="margin-top: 48px;">  <!-- Add margin to clear fixed topbar -->
+                ${this.currentPage === '/' ? html`<home-page></home-page>` 
+                : this.currentPage === '/login' ? html`<login-page></login-page>`
+                : html`<h1>404 Not Found</h1>`}
+            </div>
         `;
     }
 }

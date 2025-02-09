@@ -25,3 +25,16 @@ export const GENERATE_CAPTCHA = `
         }
     }
 `;
+
+export const LOGIN_USER = `
+    mutation LoginUser($username: String!, $password: String!) {
+        login(input: { username: $username, password: $password }) {
+            token
+            user {
+                id
+                username
+                email
+            }
+        }
+    }
+`;

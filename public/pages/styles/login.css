@@ -38,26 +38,18 @@
 
 .captcha-container {
     display: flex;
-    flex-direction: column;
+    align-items: flex-start;
     gap: 1rem;
     margin: 0.5rem 0;
 }
 
 .captcha-container img {
     max-width: 200px;
-    margin: 0 auto;
 }
 
 .captcha-actions {
     display: flex;
-    align-items: flex-start;
-    gap: 1rem;
-}
-
-.captcha-actions vaadin-text-field {
+    flex-direction: column;
+    gap: 0.5rem;
     flex: 1;
-}
-
-.captcha-actions vaadin-button {
-    margin-top: 1.5rem;
 }

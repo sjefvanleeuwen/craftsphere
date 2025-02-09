@@ -12,12 +12,20 @@
     "@vaadin/button": "^24.6.4",
     "@vaadin/password-field": "^24.6.4",
     "@vaadin/text-field": "^24.6.4",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "express": "^4.21.2",
     "graphql": "^16.10.0",
     "graphql-tag": "^2.12.6",
+    "jsonwebtoken": "^9.0.2",
     "sqlite": "^4.0.0",
-    "sqlite3": "^5.0.0"
+    "sqlite3": "^5.0.0",
+    "@vaadin/horizontal-layout": "^24.6.4",
+    "@vaadin/vertical-layout": "^24.6.4",
+    "@vaadin/app-layout": "^24.6.4",
+    "@vaadin/board": "^24.6.4",
+    "@vaadin/grid": "^24.6.4",
+    "@vaadin/split-layout": "^24.6.4"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",

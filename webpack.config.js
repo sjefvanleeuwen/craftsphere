@@ -29,16 +29,35 @@ module.exports = {
             },
             {
                 test: /\.css$/,
-                use: ['css-loader']
+                use: [
+                    'style-loader',
+                    {
+                        loader: 'css-loader',
+                        options: {
+                            url: false // This prevents css-loader from processing URLs
+                        }
+                    }
+                ]
             },
             {
                 test: /\.html$/,
                 use: ['html-loader']
+            },
+            {
+                test: /\.(png|svg|jpg|jpeg|gif)$/i,
+                type: 'asset/resource',
+                generator: {
+                    filename: 'images/[name][ext]',
+                    publicPath: '/'
+                }
             }
         ]
     },
     devServer: {
-        static: path.join(__dirname, 'public'),
+        static: {
+            directory: path.join(__dirname, 'public'),
+            watch: true
+        },
         compress: true,
         port: 4000,
         hot: true,
@@ -50,20 +69,22 @@ module.exports = {
             if (!apolloServer) {
                 apolloServer = new ApolloServer({
                     typeDefs: schema,
-                    resolvers,
-                    introspection: true
+                    resolvers
                 });
                 
-                // Setup Apollo Server asynchronously
                 (async () => {
                     await apolloServer.start();
                     
-                    // GraphQL endpoint
                     devServer.app.use('/api', 
                         cors(),
                         express.json(),
                         expressMiddleware(apolloServer, {
-                            context: async () => ({})
+                            context: async ({ req }) => ({
+                                req: {
+                                    ip: req.headers['x-forwarded-for'] || req.socket.remoteAddress,
+                                    headers: req.headers
+                                }
+                            })
                         })
                     );
                     
